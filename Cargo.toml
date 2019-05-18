@@ -1,0 +1,8 @@
+[package]
+name = "ccut"
+version = "0.1.0"
+authors = ["Byung Cheol Cho <bccho@princeton.edu>"]
+edition = "2018"
+
+[dependencies]
+argparse = "0.2.2"
