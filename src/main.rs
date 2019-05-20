@@ -272,7 +272,9 @@ fn main() {
             },
             Err(error) => {
                 println!("Error while reading stdin: {}", error);
+                break;
             },
         }
+        line.clear();
     }
 }
