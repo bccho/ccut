@@ -232,7 +232,7 @@ fn main() {
     // Parse arguments
     let mut preview = false;
     let mut cols = String::from("");
-    let mut offset: usize = 0;
+    let mut offset: usize = 1;
     {
         let mut ap = ArgumentParser::new();
         ap.set_description("Like cut, but for CSVs");
@@ -243,19 +243,36 @@ fn main() {
         ap.refer(&mut offset)
             .add_option(&["-0", "--zero"],
                         StoreConst(0),
-                        "Zero-index columns (default). Ranges are half-open like [a, b)")
+                        "Zero-index columns. Ranges are half-open like [a, b)")
             .add_option(&["-1", "--one"],
                         StoreConst(1),
-                        "One-index columns. Ranges are closed like [a, b]");
+                        "One-index columns (default). Ranges are closed like [a, b]");
         ap.refer(&mut cols)
-            .add_argument("cols", Store, "Column indices to print")
-            .required();
+            .add_argument("cols", Store, "Column indices to print");
         ap.parse_args_or_exit();
     }
 
     if preview {
-        println!("Preview mode is on");
-        // TODO: implement this
+        // TODO: dedup
+        let mut line = String::new();
+        match io::stdin().read_line(&mut line) {
+            Ok(n) => {
+                if n == 0 {
+                    return;
+                }
+                let fields: Vec<&str> = _split_line(&line);
+                let col_nums: Vec<String> = fields.iter().enumerate()
+                    .map(|tpl| (tpl.0 + offset).to_string())
+                    .collect();
+                println!("{}", col_nums.join(","));
+                println!("{}", fields.join(","));
+            },
+            Err(error) => {
+                println!("Error while reading stdin: {}", error);
+                return;
+            },
+        }
+        return;
     }
 
     let cols = parse_cols(&cols, offset);
